@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>emoji dictionary</title>
+<meta name="robots"     content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot"  content="noindex, nofollow, noarchive, nosnippet">
+<meta name="bingbot"    content="noindex, nofollow">
+<title>Glia Glyph Dictionary</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Cinzel:wght@400;600&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -41,7 +44,6 @@
     line-height: 1.7;
   }
 
-  /* ── ヘッダー ── */
   header {
     position: sticky;
     top: 0;
@@ -80,7 +82,6 @@
     font-family: 'Noto Sans JP', sans-serif;
   }
 
-  /* ── フォルダ選択ボタン ── */
   .open-btn {
     display: inline-flex;
     align-items: center;
@@ -126,7 +127,7 @@
   .dot-a { background: var(--a-badge); }
   .dot-n { background: var(--n-badge); }
 
-  /* ── ローディング ── */
+ 
   #loading-zone {
     display: none;
     flex-direction: column;
@@ -156,7 +157,6 @@
     text-transform: uppercase;
   }
 
-  /* ── 案内エリア（フォールバック） ── */
   #drop-zone {
     display: none;
     flex-direction: column;
@@ -182,7 +182,6 @@
     letter-spacing: .08em;
   }
 
-  /* ── エラーエリア ── */
   #error-zone {
     display: none;
     flex-direction: column;
@@ -209,7 +208,7 @@
     line-height: 2;
   }
 
-  /* ── テーブルラッパー（スクロールコンテナ） ── */
+ 
   #table-wrap {
     display: none;
     height: calc(100vh - var(--header-h));
@@ -227,7 +226,7 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── テーブル本体 ── */
+ 
   table {
     width: 100%;
     border-collapse: separate;
@@ -253,7 +252,6 @@
   }
   thead th:first-child { text-align: center; padding-left: 20px; }
 
-  /* 行 */
   tbody tr { transition: background .15s; }
   tbody tr:hover td { filter: brightness(1.3); }
 
@@ -267,7 +265,6 @@
     border-bottom: 1px solid var(--border);
   }
 
-  /* 収録番号セル */
   .td-num {
     text-align: center;
     font-family: 'Cinzel', serif;
@@ -295,7 +292,6 @@
   .type-a .type-badge { background: #d64a8722; color: var(--a-badge); border: 1px solid #d64a8744; }
   .type-n .type-badge { background: #e0db4b22; color: var(--n-badge); border: 1px solid #e0db4b44; }
 
-  /* 画像セル */
   .td-img {
     text-align: center;
     min-width: calc(var(--img-size) + 24px);
@@ -328,7 +324,6 @@
     font-size: 18px;
   }
 
-  /* 意味・例文セル */
   .td-meaning, .td-example {
     min-width: 140px;
     max-width: 260px;
@@ -356,7 +351,6 @@
     padding-left: 10px;
   }
 
-  /* ── ライトボックス ── */
   #lightbox {
     display: none;
     position: fixed;
@@ -378,7 +372,84 @@
     image-rendering: auto;
   }
 
-  /* スクロールバー */
+  #pw-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    animation: fadeIn .5s ease;
+  }
+  #pw-screen.hidden { display: none; }
+
+  .pw-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    letter-spacing: .3em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .pw-sub {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: .12em;
+    margin-top: -14px;
+  }
+  .pw-input-wrap {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    transition: border-color .2s;
+  }
+  .pw-input-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px #ffffff18;
+  }
+  #pw-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    letter-spacing: .18em;
+    padding: 12px 18px;
+    width: 260px;
+  }
+  #pw-submit {
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: .15em;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+    text-transform: uppercase;
+  }
+  #pw-submit:hover { background: #ffffff12; color: var(--accent); }
+
+  #pw-error {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    color: #ff6b6b;
+    letter-spacing: .1em;
+    min-height: 18px;
+    animation: shake .3s ease;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border-h); border-radius: 3px; }
@@ -386,15 +457,24 @@
 </head>
 <body>
 
+<div id="pw-screen">
+  <p class="pw-title">Glia Glyph Dictionary</p>
+  <p class="pw-sub">— restricted access —</p>
+  <div class="pw-input-wrap">
+    <input type="password" id="pw-input" placeholder="password" autocomplete="off" spellcheck="false">
+    <button id="pw-submit">Enter</button>
+  </div>
+  <p id="pw-error"></p>
+</div>
+
 <header>
-  <h1>emoji dictionary<span>第一版</span></h1>
+  <h1>Glia Glyph Dictionary<span>☉</span></h1>
   <div class="legend">
     <div class="badge"><span class="badge-dot dot-v"></span>V</div>
     <div class="badge"><span class="badge-dot dot-a"></span>A</div>
     <div class="badge"><span class="badge-dot dot-n"></span>N</div>
   </div>
   <div id="stats"></div>
-  <!-- フォールバック用（manifest.json がない場合 / ローカル開発用） -->
   <button class="open-btn" id="manual-btn" style="display:none"
           onclick="document.getElementById('folder-input').click()">
     𓁞 フォルダを選択
@@ -411,7 +491,7 @@
 <!-- 案内エリア（フォールバック） -->
 <div id="drop-zone">
   <p class="guide-text">右上からフォルダを選択せよ</p>
-  <p class="guide-sub">画像ファイル（[番号]p1 / [番号]p2）とテキストファイル（[番号]v/a/n）を自動で読み込みます</p>
+  <p class="guide-sub">画像ファイル及びテキストファイルを自動で読み込みます</p>
 </div>
 
 <!-- エラーエリア -->
@@ -427,11 +507,11 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>文字１</th>
-          <th>文字２</th>
-          <th>字義１</th>
-          <th>字義２</th>
-          <th>例文</th>
+          <th>語彙</th>
+          <th>グリア</th>
+          <th>字義</th>
+          <th>グリアの仮称</th>
+          <th>概要</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -439,30 +519,69 @@
   </div>
 </div>
 
-<!-- ライトボックス -->
 <div id="lightbox" onclick="closeLightbox()">
   <img id="lb-img" src="" alt="">
 </div>
 
 <script>
-// =========================================================
-//  起動時：GitHub API でファイル一覧を自動取得
-// =========================================================
+var PW_HASH = 'n7n7ge6FGdh1me6Fmc'; 
+var _P = ['n', '7'].join('');
+
+function checkPassword(input) {
+  var encoded  = btoa(unescape(encodeURIComponent(input)));
+  var reversed = encoded.split('').reverse().join('');
+  var disguised = reversed.split('=').join(_P);
+  return disguised === PW_HASH;
+}
+
+function initPasswordScreen() {
+  if (sessionStorage.getItem('pw_ok') === '1') {
+    document.getElementById('pw-screen').classList.add('hidden');
+    return true;
+  }
+
+  var screen  = document.getElementById('pw-screen');
+  var input   = document.getElementById('pw-input');
+  var submit  = document.getElementById('pw-submit');
+  var errMsg  = document.getElementById('pw-error');
+
+  function attempt() {
+    if (checkPassword(input.value)) {
+      sessionStorage.setItem('pw_ok', '1');
+      screen.style.animation = 'none';
+      screen.style.opacity   = '0';
+      screen.style.transition = 'opacity .4s ease';
+      setTimeout(function(){ screen.classList.add('hidden'); }, 400);
+      autoLoadFromGitHub();
+    } else {
+      input.value = '';
+      errMsg.textContent = '';
+      // アニメーション再トリガー
+      void errMsg.offsetWidth;
+      errMsg.textContent = 'incorrect password';
+      input.focus();
+    }
+  }
+
+  submit.addEventListener('click', attempt);
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') attempt();
+  });
+
+  input.focus();
+  return false;
+}
+
 window.addEventListener('DOMContentLoaded', function () {
-  autoLoadFromGitHub();
+  if (initPasswordScreen()) {
+    // 認証済みセッションなら即ロード
+    autoLoadFromGitHub();
+  }
 });
 
-// GitHub Pages の URL からオーナーとリポジトリ名を特定し、
-// Contents API でファイル一覧を取得してテーブルを構築します。
-//
-// 対応 URL パターン:
-//   https://{owner}.github.io/{repo}/   → プロジェクトページ（最も一般的）
-//   https://{owner}.github.io/          → ユーザーページ（repo = owner.github.io）
-//
-// ローカルで直接 index.html を開いた場合は自動的にフォルダ選択へ切り替わります。
 async function autoLoadFromGitHub() {
-  var hostname = window.location.hostname; // 例: "username.github.io"
-  var pathname = window.location.pathname; // 例: "/repo-name/"
+  var hostname = window.location.hostname; // 
+  var pathname = window.location.pathname; // 
 
   // GitHub Pages 以外（localhost など）は即フォールバック
   var hostParts = hostname.split('.');
@@ -478,11 +597,9 @@ async function autoLoadFromGitHub() {
   var repo, dataPath;
 
   if (pathParts.length === 0) {
-    // ユーザーページ (owner.github.io) → リポジトリ名は "owner.github.io"
     repo     = owner + '.github.io';
     dataPath = '';
   } else {
-    // プロジェクトページ (owner.github.io/repo/) → 最初のパスセグメントがリポジトリ名
     repo     = pathParts[0];
     dataPath = pathParts.slice(1).join('/');
   }
@@ -516,9 +633,6 @@ async function autoLoadFromGitHub() {
   }
 }
 
-// =========================================================
-//  URL リストからテーブルを構築（GitHub Pages 用）
-// =========================================================
 async function buildDictionaryFromURLs(fileList) {
   var groups = {};
 
@@ -631,14 +745,11 @@ function makeImgCellFromURL(url) {
   return td;
 }
 
-// =========================================================
-//  フォールバック：フォルダ選択（ローカル開発 / GitHub Pages 以外）
-// =========================================================
 function showFallback(err) {
   hide('loading-zone');
   show('drop-zone');
   document.getElementById('manual-btn').style.display = 'inline-flex';
-  console.warn('[emoji-dict] GitHub API での自動読み込みができませんでした。フォルダ選択モードに切り替えます。', err);
+  console.warn('GitHub API での自動読み込みができませんでした。フォルダ選択モードに切り替えます。', err);
 }
 
 document.getElementById('folder-input').addEventListener('change', async function(e) {
@@ -766,9 +877,6 @@ function readText(file) {
   });
 }
 
-// =========================================================
-//  共通ユーティリティ
-// =========================================================
 function showTable(count) {
   hide('loading-zone');
   hide('drop-zone');
