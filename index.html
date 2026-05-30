@@ -446,29 +446,72 @@
 
 <script>
 // =========================================================
-//  設定
-//  manifest.json の場所（index.html からの相対パス）
-// =========================================================
-var MANIFEST_PATH = 'manifest.json';
-
-// =========================================================
-//  起動時：まず manifest.json を試みる
+//  起動時：GitHub API でファイル一覧を自動取得
 // =========================================================
 window.addEventListener('DOMContentLoaded', function () {
-  fetchManifest();
+  autoLoadFromGitHub();
 });
 
-async function fetchManifest() {
+// GitHub Pages の URL からオーナーとリポジトリ名を特定し、
+// Contents API でファイル一覧を取得してテーブルを構築します。
+//
+// 対応 URL パターン:
+//   https://{owner}.github.io/{repo}/   → プロジェクトページ（最も一般的）
+//   https://{owner}.github.io/          → ユーザーページ（repo = owner.github.io）
+//
+// ローカルで直接 index.html を開いた場合は自動的にフォルダ選択へ切り替わります。
+async function autoLoadFromGitHub() {
+  var hostname = window.location.hostname; // 例: "username.github.io"
+  var pathname = window.location.pathname; // 例: "/repo-name/"
+
+  // GitHub Pages 以外（localhost など）は即フォールバック
+  var hostParts = hostname.split('.');
+  if (hostParts.length < 3 || hostParts[1] !== 'github' || hostParts[2] !== 'io') {
+    showFallback(new Error('GitHub Pages 以外の環境'));
+    return;
+  }
+
+  var owner = hostParts[0];
+
+  // パスからリポジトリ名を特定
+  var pathParts = pathname.replace(/^\/|\/$/g, '').split('/').filter(function(p){ return p; });
+  var repo, dataPath;
+
+  if (pathParts.length === 0) {
+    // ユーザーページ (owner.github.io) → リポジトリ名は "owner.github.io"
+    repo     = owner + '.github.io';
+    dataPath = '';
+  } else {
+    // プロジェクトページ (owner.github.io/repo/) → 最初のパスセグメントがリポジトリ名
+    repo     = pathParts[0];
+    dataPath = pathParts.slice(1).join('/');
+  }
+
+  // GitHub Contents API を呼び出す
+  var apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + dataPath;
+
   try {
-    var res = await fetch(MANIFEST_PATH);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    var fileList = await res.json();
-    if (!Array.isArray(fileList) || fileList.length === 0) {
-      throw new Error('manifest.json が空です');
+    var res = await fetch(apiUrl, {
+      headers: { 'Accept': 'application/vnd.github+json' }
+    });
+    if (!res.ok) throw new Error('GitHub API: HTTP ' + res.status + ' (' + apiUrl + ')');
+
+    var items = await res.json();
+    if (!Array.isArray(items)) throw new Error('GitHub API のレスポンスが不正です');
+
+    // 対象ファイルだけ抽出（[番号]p1/p2.* と [番号]v/a/n.*）
+    var validName = /^(\d+p[12]|\d+[van])\.(png|jpg|jpeg|gif|webp|svg|txt|text)$/i;
+    var fileList = items
+      .filter(function(item){ return item.type === 'file' && validName.test(item.name); })
+      .map(function(item){ return item.download_url; }); // raw.githubusercontent.com の URL
+
+    if (fileList.length === 0) {
+      throw new Error('対象ファイルが見つかりません（命名規則: [番号]p1.png / [番号]v.txt など）');
     }
+
     await buildDictionaryFromURLs(fileList);
+
   } catch (err) {
-    // manifest.json が存在しない、またはパースエラー → フォールバック
     showFallback(err);
   }
 }
@@ -589,13 +632,13 @@ function makeImgCellFromURL(url) {
 }
 
 // =========================================================
-//  フォールバック：フォルダ選択（ローカル開発 / manifest なし）
+//  フォールバック：フォルダ選択（ローカル開発 / GitHub Pages 以外）
 // =========================================================
 function showFallback(err) {
   hide('loading-zone');
   show('drop-zone');
   document.getElementById('manual-btn').style.display = 'inline-flex';
-  console.warn('[emoji-dict] manifest.json が見つかりません。フォルダ選択モードに切り替えます。', err);
+  console.warn('[emoji-dict] GitHub API での自動読み込みができませんでした。フォルダ選択モードに切り替えます。', err);
 }
 
 document.getElementById('folder-input').addEventListener('change', async function(e) {
